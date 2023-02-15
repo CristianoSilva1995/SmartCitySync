@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "42416306344",
+    "project_id": "smartcitysync",
+    "storage_bucket": "smartcitysync.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:42416306344:android:dee53f5466703eeb5caa9d",
+        "android_client_info": {
+          "package_name": "com.mycompany.smartcitysync"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "42416306344-ejn56vjqo1p38dkcu8kjm4qdpliq1275.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mycompany.smartcitysync",
+            "certificate_hash": "9bbb3186b2189ef16d8f272bdab59362c395cbb4"
+          }
+        },
+        {
+          "client_id": "42416306344-rs0rcouudtfuls0ba6nurdvkbifrg4ra.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBo7B9TYhcdtnCzGxQOsHKsmTgvNJqklak"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "42416306344-rs0rcouudtfuls0ba6nurdvkbifrg4ra.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "42416306344-hs989b5r2u8ah595mtsjama3gsq8a3id.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mycompany.smartcitysync"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
