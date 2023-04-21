@@ -221,7 +221,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                     showLocation: false,
                     showCompass: true,
                     showMapToolbar: true,
-                    showTraffic: true,
+                    showTraffic: false,
                     centerMapOnMarkerTap: true,
                   ),
                 ),
