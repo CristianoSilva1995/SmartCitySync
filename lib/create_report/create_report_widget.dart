@@ -1,5 +1,6 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:tutorial/storage_service.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_util.dart';
 import '../flutter_flow/flutter_flow_widgets.dart';
@@ -7,8 +8,8 @@ import '../flutter_flow/upload_media.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../login/login_widget.dart';
+import 'package:location_geocoder/location_geocoder.dart';
 
 class CreateReportWidget extends StatefulWidget {
   const CreateReportWidget({Key? key}) : super(key: key);
@@ -83,6 +84,9 @@ class _CreateReportWidgetState extends State<CreateReportWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final Storage storage = Storage();
+    var path;
+    var fileName;
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -160,6 +164,26 @@ class _CreateReportWidgetState extends State<CreateReportWidget> {
                       style: FlutterFlowTheme.of(context).bodyText1,
                     ),
                   ),
+                  // FutureBuilder(
+                  //   future: storage.downloadURL(
+                  //       'casestudy_body_merton_main_xs_col12_hpad0.jpg'),
+                  //   builder:
+                  //       (BuildContext context, AsyncSnapshot<String> snapshot) {
+                  //     if (snapshot.connectionState == ConnectionState.done &&
+                  //         snapshot.hasData) {
+                  //       return Container(
+                  //           width: 300,
+                  //           height: 200,
+                  //           child: Image.network(snapshot.data!,
+                  //               fit: BoxFit.cover));
+                  //     }
+                  //     if (snapshot.connectionState == ConnectionState.waiting ||
+                  //         !snapshot.hasData) {
+                  //       return CircularProgressIndicator();
+                  //     }
+                  //     return Container();
+                  //   },
+                  // ),
                   Form(
                     key: formKey,
                     autovalidateMode: AutovalidateMode.disabled,
@@ -217,8 +241,7 @@ class _CreateReportWidgetState extends State<CreateReportWidget> {
                                     .override(
                                       fontFamily: FlutterFlowTheme.of(context)
                                           .bodyText1Family,
-                                      color: FlutterFlowTheme.of(context)
-                                          .primaryBtnText,
+                                      color: Color.fromARGB(255, 0, 0, 0),
                                       useGoogleFonts: GoogleFonts.asMap()
                                           .containsKey(
                                               FlutterFlowTheme.of(context)
@@ -274,8 +297,7 @@ class _CreateReportWidgetState extends State<CreateReportWidget> {
                                     .override(
                                       fontFamily: FlutterFlowTheme.of(context)
                                           .bodyText1Family,
-                                      color: FlutterFlowTheme.of(context)
-                                          .primaryBtnText,
+                                      color: Color.fromARGB(255, 0, 0, 0),
                                       useGoogleFonts: GoogleFonts.asMap()
                                           .containsKey(
                                               FlutterFlowTheme.of(context)
@@ -331,8 +353,7 @@ class _CreateReportWidgetState extends State<CreateReportWidget> {
                                     .override(
                                       fontFamily: FlutterFlowTheme.of(context)
                                           .bodyText1Family,
-                                      color: FlutterFlowTheme.of(context)
-                                          .primaryBtnText,
+                                      color: Color.fromARGB(255, 0, 0, 0),
                                       useGoogleFonts: GoogleFonts.asMap()
                                           .containsKey(
                                               FlutterFlowTheme.of(context)
@@ -388,8 +409,7 @@ class _CreateReportWidgetState extends State<CreateReportWidget> {
                                     .override(
                                       fontFamily: FlutterFlowTheme.of(context)
                                           .bodyText1Family,
-                                      color: FlutterFlowTheme.of(context)
-                                          .primaryBtnText,
+                                      color: Color.fromARGB(255, 0, 0, 0),
                                       useGoogleFonts: GoogleFonts.asMap()
                                           .containsKey(
                                               FlutterFlowTheme.of(context)
@@ -403,37 +423,30 @@ class _CreateReportWidgetState extends State<CreateReportWidget> {
                           padding: EdgeInsetsDirectional.fromSTEB(0, 15, 0, 0),
                           child: FFButtonWidget(
                             onPressed: () async {
-                              final selectedMedia =
-                                  await selectMediaWithSourceBottomSheet(
-                                context: context,
-                                allowPhoto: true,
+                              final results =
+                                  await FilePicker.platform.pickFiles(
+                                allowMultiple: false,
+                                type: FileType.custom,
+                                allowedExtensions: ['png', 'jpg'],
                               );
-                              if (selectedMedia != null &&
-                                  selectedMedia.every((m) => validateFileFormat(
-                                      m.storagePath, context))) {
-                                setState(() => isMediaUploading2 = true);
-                                var selectedLocalFiles = <FFLocalFile>[];
-                                try {
-                                  selectedLocalFiles = selectedMedia
-                                      .map((m) => FFLocalFile(
-                                            name: m.storagePath.split('/').last,
-                                            bytes: m.bytes,
-                                          ))
-                                      .toList();
-                                } finally {
-                                  isMediaUploading2 = false;
-                                }
-                                if (selectedLocalFiles.length ==
-                                    selectedMedia.length) {
-                                  setState(() => uploadedLocalFile2 =
-                                      selectedLocalFiles.first);
-                                } else {
-                                  setState(() {});
-                                  return;
-                                }
+
+                              if (results == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text('No image selected.')));
+                                return null;
                               }
+                              path = results.files.single.path!;
+                              fileName = results.files.single.name;
+
+                              storage
+                                  .uploadFile(path, fileName)
+                                  .then((value) => print('Done'));
+
+                              print(path);
+                              print(fileName);
                             },
-                            text: 'Upload Image',
+                            text: 'Select Image',
                             options: FFButtonOptions(
                               width: 370,
                               height: 40,
@@ -467,8 +480,26 @@ class _CreateReportWidgetState extends State<CreateReportWidget> {
                 child: Padding(
                   padding: EdgeInsetsDirectional.fromSTEB(0, 100, 0, 0),
                   child: FFButtonWidget(
-                    onPressed: () {
+                    onPressed: () async {
+                      const _apiKey = 'AIzaSyCIvkiPzeUfOvJNg7H1us8-rKld2e5Saas';
+                      final LocatitonGeocoder geocoder =
+                          LocatitonGeocoder(_apiKey);
+                      final address = await geocoder
+                          .findAddressesFromQuery(textController3!.text);
+                      print(address.first.coordinates);
+
                       print('Button pressed ...');
+                      Map<String, dynamic> data = {
+                        "title": textController1!.text,
+                        "description": textController2!.text,
+                        "address": textController3!.text,
+                        "postCode": textController4!.text,
+                        "latlong": address.first.coordinates,
+                        "fileName": fileName,
+                        "filePath": path,
+                      };
+
+                      FirebaseFirestore.instance.collection("test").add(data);
                     },
                     text: 'Submit',
                     options: FFButtonOptions(
