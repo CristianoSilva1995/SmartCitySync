@@ -494,12 +494,13 @@ class _CreateReportWidgetState extends State<CreateReportWidget> {
                         "description": textController2!.text,
                         "address": textController3!.text,
                         "postCode": textController4!.text,
-                        "latlong": address.first.coordinates,
+                        "lat": address.first.coordinates.latitude,
+                        "lng": address.first.coordinates.longitude,
                         "fileName": fileName,
                         "filePath": path,
                       };
 
-                      FirebaseFirestore.instance.collection("test").add(data);
+                      FirebaseFirestore.instance.collection("ticket").add(data);
                     },
                     text: 'Submit',
                     options: FFButtonOptions(
