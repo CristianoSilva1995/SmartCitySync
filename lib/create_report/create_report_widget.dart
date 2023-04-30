@@ -489,6 +489,9 @@ class _CreateReportWidgetState extends State<CreateReportWidget> {
                       print(address.first.coordinates);
 
                       print('Button pressed ...');
+                      DateTime now = DateTime.now();
+                      String formattedDate =
+                          DateFormat('dd-MM-yyyy').format(now);
                       Map<String, dynamic> data = {
                         "title": textController1!.text,
                         "description": textController2!.text,
@@ -498,8 +501,9 @@ class _CreateReportWidgetState extends State<CreateReportWidget> {
                         "lng": address.first.coordinates.longitude,
                         "fileName": fileName,
                         "filePath": path,
+                        "date": formattedDate,
+                        "status": "In Process",
                       };
-
                       FirebaseFirestore.instance.collection("ticket").add(data);
                     },
                     text: 'Submit',
