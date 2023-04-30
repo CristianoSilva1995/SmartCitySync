@@ -28,38 +28,19 @@ class HomeWidgetState extends State<HomeWidget> {
     super.initState();
   }
 
+  String downloadUrl = "";
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
   TextEditingController _searchController = TextEditingController();
 
-  static const CameraPosition _kGooglePlex = CameraPosition(
+  CustomInfoWindowController customInfoWindowController =
+      CustomInfoWindowController();
+
+  static const CameraPosition initialCamera = CameraPosition(
     target: LatLng(51.509865, -0.118092),
     zoom: 14.4746,
   );
 
-  static final Marker _kGooglePlexMarker = Marker(
-    markerId: MarkerId('_kGooglePlex'),
-    infoWindow: InfoWindow(title: 'Test test'),
-    icon: BitmapDescriptor.defaultMarker,
-    position: LatLng(51.509865, -0.118092),
-  );
-
-  static Stream<QuerySnapshot> readItems() {
-    CollectionReference notesItemCollection =
-        _ticketRead.doc().collection('ticket');
-
-    return notesItemCollection.snapshots();
-  }
-
-  static final Marker _kLakeMarker = Marker(
-    markerId: MarkerId('_kGooglePlex1'),
-    infoWindow: InfoWindow(title: 'Test test test'),
-    icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-    position: LatLng(51.509865, -0.128092),
-    onTap: () {
-      print('tap');
-    },
-  );
   Set<Marker> markers = Set();
   @override
   Widget build(BuildContext context) {
@@ -108,68 +89,216 @@ class HomeWidgetState extends State<HomeWidget> {
         centerTitle: false,
         elevation: 2,
       ),
-      body: StreamBuilder(
-          stream: _ticketRead.snapshots(),
-          builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-            if (streamSnapshot.hasData) {
-              for (int i = 0; i < streamSnapshot.data!.docs.length; i++) {
-                final DocumentSnapshot documentSnapshot =
-                    streamSnapshot.data!.docs[i];
-                Marker resMarker = new Marker(
-                  markerId: MarkerId('marker' + i.toString()),
-                  infoWindow: InfoWindow(
-                      title: documentSnapshot['title'],
-                      snippet: documentSnapshot['description']),
-                  icon: BitmapDescriptor.defaultMarker,
-                  position:
-                      LatLng(documentSnapshot['lat'], documentSnapshot['lng']),
-                  onTap: () {},
-                );
-                markers.add(resMarker);
+      body: Stack(
+        children: [
+          StreamBuilder(
+            stream: _ticketRead.snapshots(),
+            builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+              if (streamSnapshot.hasData) {
+                for (int i = 0; i < streamSnapshot.data!.docs.length; i++) {
+                  final DocumentSnapshot documentSnapshot =
+                      streamSnapshot.data!.docs[i];
+                  var newIcon = BitmapDescriptor.defaultMarkerWithHue(
+                      BitmapDescriptor.hueAzure);
+
+                  newIcon = updateMarkerIcon(documentSnapshot['status']);
+
+                  Marker resMarker = new Marker(
+                    markerId: MarkerId('marker' + i.toString()),
+                    icon: newIcon,
+                    position: LatLng(
+                        documentSnapshot['lat'], documentSnapshot['lng']),
+                    onTap: () async {
+                      downloadUrl = await Storage()
+                          .downloadURL(documentSnapshot['fileName']);
+
+                      customInfoWindowController.addInfoWindow!(
+                        SingleChildScrollView(
+                          child: Container(
+                            height: 300,
+                            width: 200,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: 300,
+                                  height: 100,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: NetworkImage(downloadUrl),
+                                      fit: BoxFit.fitWidth,
+                                      filterQuality: FilterQuality.high,
+                                    ),
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(10.0),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(top: 10, left: 5),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 290,
+                                        child: Text(
+                                          documentSnapshot['title'],
+                                          maxLines: 1,
+                                          overflow: TextOverflow.fade,
+                                          softWrap: true,
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(top: 10, left: 5),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 290,
+                                        child: Text(
+                                          documentSnapshot['description'],
+                                          maxLines: 3,
+                                          softWrap: true,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(top: 10, left: 5),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 290,
+                                        child: Text(
+                                          documentSnapshot['address'],
+                                          maxLines: 3,
+                                          softWrap: true,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(top: 10, left: 5),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 290,
+                                        child: Text(
+                                          "Status: " +
+                                              documentSnapshot['status'],
+                                          maxLines: 3,
+                                          softWrap: true,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(top: 10, left: 5),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 290,
+                                        child: Text(
+                                          "Date: " + documentSnapshot['date'],
+                                          maxLines: 3,
+                                          softWrap: true,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        LatLng(
+                          documentSnapshot['lat'],
+                          documentSnapshot['lng'],
+                        ),
+                      );
+                    },
+                  );
+                  markers.add(resMarker);
+                }
               }
-            }
-            return Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: _searchController,
-                          textCapitalization: TextCapitalization.words,
-                          decoration:
-                              InputDecoration(hintText: 'Search by address'),
-                          onChanged: (value) {
-                            print(value);
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _searchController,
+                            textCapitalization: TextCapitalization.words,
+                            decoration:
+                                InputDecoration(hintText: 'Search by address'),
+                            onChanged: (value) {
+                              print(value);
+                            },
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () async {
+                            print(_searchController.text);
+                            var place = await LocationService()
+                                .getPlace(_searchController.text);
+                            _goToPlace(place);
+                          },
+                          icon: Icon(Icons.search),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        GoogleMap(
+                          onTap: (position) {
+                            customInfoWindowController.hideInfoWindow!();
+                          },
+                          mapType: MapType.normal,
+                          markers: markers,
+                          initialCameraPosition: initialCamera,
+                          onCameraMove: (position) {
+                            customInfoWindowController.onCameraMove!();
+                          },
+                          onMapCreated: (GoogleMapController controller) async {
+                            customInfoWindowController.googleMapController =
+                                controller;
+                            _controller.complete(controller);
                           },
                         ),
-                      ),
-                      IconButton(
-                        onPressed: () async {
-                          print(_searchController.text);
-                          var place = await LocationService()
-                              .getPlace(_searchController.text);
-                          _goToPlace(place);
-                        },
-                        icon: Icon(Icons.search),
-                      ),
-                    ],
+                        CustomInfoWindow(
+                            controller: customInfoWindowController,
+                            height: 200,
+                            width: 300,
+                            offset: 50)
+                      ],
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: GoogleMap(
-                    mapType: MapType.normal,
-                    markers: markers,
-                    initialCameraPosition: _kGooglePlex,
-                    onMapCreated: (GoogleMapController controller) {
-                      _controller.complete(controller);
-                    },
-                  ),
-                ),
-              ],
-            );
-          }),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -189,5 +318,17 @@ class HomeWidgetState extends State<HomeWidget> {
         CameraPosition(target: LatLng(lat, lng), zoom: 14),
       ),
     );
+  }
+
+  static BitmapDescriptor updateMarkerIcon(String status) {
+    var icon;
+    if (status == 'In Process') {
+      icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange);
+    } else if (status == 'In Progress') {
+      icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
+    } else if (status == 'Urgent') {
+      icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
+    }
+    return icon;
   }
 }
