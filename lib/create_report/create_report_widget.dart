@@ -21,7 +21,7 @@ class CreateReportWidget extends StatefulWidget {
 class _CreateReportWidgetState extends State<CreateReportWidget> {
   bool isMediaUploading1 = false;
   FFLocalFile uploadedLocalFile1 = FFLocalFile(bytes: Uint8List.fromList([]));
-
+  String downloadUrl = "";
   final _unfocusNode = FocusNode();
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final formKey = GlobalKey<FormState>();
@@ -488,6 +488,7 @@ class _CreateReportWidgetState extends State<CreateReportWidget> {
                           .findAddressesFromQuery(textController3!.text);
                       print(address.first.coordinates);
 
+                      await getPhotoUrl(fileName);
                       print('Button pressed ...');
                       DateTime now = DateTime.now();
                       String formattedDate =
@@ -500,7 +501,7 @@ class _CreateReportWidgetState extends State<CreateReportWidget> {
                         "lat": address.first.coordinates.latitude,
                         "lng": address.first.coordinates.longitude,
                         "fileName": fileName,
-                        "filePath": path,
+                        "filePath": downloadUrl,
                         "date": formattedDate,
                         "status": "In Process",
                       };
@@ -534,5 +535,9 @@ class _CreateReportWidgetState extends State<CreateReportWidget> {
         ),
       ),
     );
+  }
+
+  Future getPhotoUrl(String fileName) async {
+    downloadUrl = await Storage().downloadURL(fileName);
   }
 }

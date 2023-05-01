@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../flutter_flow/flutter_flow_theme.dart';
@@ -6,6 +7,8 @@ import '../flutter_flow/flutter_flow_widgets.dart';
 import '../login/login_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../storage_service.dart';
 
 class ProfileWidget extends StatefulWidget {
   const ProfileWidget({Key? key}) : super(key: key);
@@ -17,7 +20,7 @@ class ProfileWidget extends StatefulWidget {
 class _ProfileWidgetState extends State<ProfileWidget> {
   final _unfocusNode = FocusNode();
   final scaffoldKey = GlobalKey<ScaffoldState>();
-
+  String downloadUrl = "";
   @override
   void dispose() {
     _unfocusNode.dispose();
@@ -26,6 +29,9 @@ class _ProfileWidgetState extends State<ProfileWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    final CollectionReference _ticketRead = _firestore.collection('ticket');
+
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -120,144 +126,111 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                             ),
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(0, 10, 0, 0),
-                      child: ListTile(
-                        title: Text(
-                          'Ticket Title',
-                          style: FlutterFlowTheme.of(context).title3,
+                    SizedBox(
+                      width: 300,
+                      height: 550,
+                      child: Padding(
+                        padding: EdgeInsetsDirectional.fromSTEB(10, 15, 15, 0),
+                        child: StreamBuilder(
+                          stream: _ticketRead.snapshots(),
+                          builder: (context,
+                              AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+                            if (streamSnapshot.hasError) {
+                              return Text('Something went wrong');
+                            }
+                            if (streamSnapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return CircularProgressIndicator();
+                            }
+                            return ListView.builder(
+                              itemCount: streamSnapshot.data!.docs.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                final DocumentSnapshot documentSnapshot =
+                                    streamSnapshot.data!.docs[index];
+
+                                return Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 10),
+                                  child: Row(
+                                    children: [
+                                      Image.network(
+                                        documentSnapshot['filePath'],
+                                        width: 150,
+                                        height: 150,
+                                        fit: BoxFit.cover,
+                                      ),
+                                      SizedBox(width: 10),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            SizedBox(
+                                              width: 160,
+                                              child: Text(
+                                                documentSnapshot['title'],
+                                                softWrap: true,
+                                                maxLines: 3,
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 8.0),
+                                              child: SizedBox(
+                                                width: 160,
+                                                child: Text(
+                                                  documentSnapshot[
+                                                      'description'],
+                                                  softWrap: true,
+                                                  maxLines: 3,
+                                                ),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 8.0),
+                                              child: SizedBox(
+                                                width: 160,
+                                                child: Text(
+                                                  documentSnapshot['address'],
+                                                  softWrap: true,
+                                                  maxLines: 3,
+                                                ),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 8.0),
+                                              child: SizedBox(
+                                                width: 160,
+                                                child: Text(
+                                                  documentSnapshot['date'],
+                                                  softWrap: true,
+                                                  maxLines: 3,
+                                                ),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 8.0),
+                                              child: SizedBox(
+                                                width: 160,
+                                                child: Text(
+                                                  documentSnapshot['status'],
+                                                  softWrap: true,
+                                                  maxLines: 3,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          },
                         ),
-                        subtitle: Text(
-                          'Current status: ',
-                          style: FlutterFlowTheme.of(context).subtitle2,
-                        ),
-                        trailing: Icon(
-                          Icons.arrow_forward_ios,
-                          color: Color(0xFF303030),
-                          size: 20,
-                        ),
-                        tileColor: Color(0xFFF5F5F5),
-                        dense: false,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(0, 10, 0, 0),
-                      child: ListTile(
-                        title: Text(
-                          'Ticket Title',
-                          style: FlutterFlowTheme.of(context).title3,
-                        ),
-                        subtitle: Text(
-                          'Current status: ',
-                          style: FlutterFlowTheme.of(context).subtitle2,
-                        ),
-                        trailing: Icon(
-                          Icons.arrow_forward_ios,
-                          color: Color(0xFF303030),
-                          size: 20,
-                        ),
-                        tileColor: Color(0xFFF5F5F5),
-                        dense: false,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(0, 10, 0, 0),
-                      child: ListTile(
-                        title: Text(
-                          'Ticket Title',
-                          style: FlutterFlowTheme.of(context).title3,
-                        ),
-                        subtitle: Text(
-                          'Current status: ',
-                          style: FlutterFlowTheme.of(context).subtitle2,
-                        ),
-                        trailing: Icon(
-                          Icons.arrow_forward_ios,
-                          color: Color(0xFF303030),
-                          size: 20,
-                        ),
-                        tileColor: Color(0xFFF5F5F5),
-                        dense: false,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(0, 10, 0, 0),
-                      child: ListTile(
-                        title: Text(
-                          'Ticket Title',
-                          style: FlutterFlowTheme.of(context).title3,
-                        ),
-                        subtitle: Text(
-                          'Current status: ',
-                          style: FlutterFlowTheme.of(context).subtitle2,
-                        ),
-                        trailing: Icon(
-                          Icons.arrow_forward_ios,
-                          color: Color(0xFF303030),
-                          size: 20,
-                        ),
-                        tileColor: Color(0xFFF5F5F5),
-                        dense: false,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(0, 10, 0, 0),
-                      child: ListTile(
-                        title: Text(
-                          'Ticket Title',
-                          style: FlutterFlowTheme.of(context).title3,
-                        ),
-                        subtitle: Text(
-                          'Current status: ',
-                          style: FlutterFlowTheme.of(context).subtitle2,
-                        ),
-                        trailing: Icon(
-                          Icons.arrow_forward_ios,
-                          color: Color(0xFF303030),
-                          size: 20,
-                        ),
-                        tileColor: Color(0xFFF5F5F5),
-                        dense: false,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(0, 10, 0, 0),
-                      child: ListTile(
-                        title: Text(
-                          'Ticket Title',
-                          style: FlutterFlowTheme.of(context).title3,
-                        ),
-                        subtitle: Text(
-                          'Current status: ',
-                          style: FlutterFlowTheme.of(context).subtitle2,
-                        ),
-                        trailing: Icon(
-                          Icons.arrow_forward_ios,
-                          color: Color(0xFF303030),
-                          size: 20,
-                        ),
-                        tileColor: Color(0xFFF5F5F5),
-                        dense: false,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(0, 10, 0, 0),
-                      child: ListTile(
-                        title: Text(
-                          'Ticket Title',
-                          style: FlutterFlowTheme.of(context).title3,
-                        ),
-                        subtitle: Text(
-                          'Current status: ',
-                          style: FlutterFlowTheme.of(context).subtitle2,
-                        ),
-                        trailing: Icon(
-                          Icons.arrow_forward_ios,
-                          color: Color(0xFF303030),
-                          size: 20,
-                        ),
-                        tileColor: Color(0xFFF5F5F5),
-                        dense: false,
                       ),
                     ),
                   ],
@@ -268,5 +241,10 @@ class _ProfileWidgetState extends State<ProfileWidget> {
         ),
       ),
     );
+  }
+
+  Future<String> getPhotoUrl(String fileName) async {
+    downloadUrl = await Storage().downloadURL(fileName);
+    return downloadUrl;
   }
 }

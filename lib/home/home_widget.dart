@@ -327,7 +327,7 @@ class HomeWidgetState extends State<HomeWidget> {
     } else if (status == 'In Progress') {
       icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
     } else if (status == 'Urgent') {
-      icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
+      icon = BitmapDescriptor.defaultMarker;
     }
     return icon;
   }
