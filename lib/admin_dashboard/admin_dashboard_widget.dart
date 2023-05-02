@@ -268,14 +268,12 @@ class _AdminDashboardWidgetState extends State<AdminDashboardWidget> {
                                                                     .instance
                                                                     .collection(
                                                                         'ticket')
-                                                                    .doc(documentSnapshot[
-                                                                        'uid']);
+                                                                    .doc(documentSnapshot
+                                                                        .id);
                                                             docTicket.update({
                                                               'status':
                                                                   selectedStatus
                                                             });
-                                                            print(
-                                                                selectedStatus);
                                                           });
                                                         },
                                                       ),
