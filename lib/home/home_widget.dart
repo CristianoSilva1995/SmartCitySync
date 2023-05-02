@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tutorial/location_service.dart';
@@ -34,6 +35,9 @@ class HomeWidgetState extends State<HomeWidget> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
   TextEditingController _searchController = TextEditingController();
+  late double lat;
+  late double lng;
+  String locationMessage = 'Current Location of the User';
 
   CustomInfoWindowController customInfoWindowController =
       CustomInfoWindowController();
@@ -42,6 +46,42 @@ class HomeWidgetState extends State<HomeWidget> {
     target: LatLng(51.509865, -0.118092),
     zoom: 14.4746,
   );
+
+  Future<Position> _getCurrentUserLocation() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled');
+    }
+    LocationPermission permission = await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location services are disabled');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          "Location permissions are permanently denied, cannot request location");
+    }
+    return await Geolocator.getCurrentPosition();
+  }
+
+  void _liveLocation() {
+    LocationSettings locationSettings = const LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 100,
+    );
+    Geolocator.getPositionStream(locationSettings: locationSettings)
+        .listen((Position position) {
+      lat = position.latitude;
+      lng = position.longitude;
+    });
+    setState(() {
+      _goToUserLocation(lat, lng);
+    });
+  }
 
   Set<Marker> markers = Set();
   @override
@@ -292,7 +332,37 @@ class HomeWidgetState extends State<HomeWidget> {
                             controller: customInfoWindowController,
                             height: 200,
                             width: 300,
-                            offset: 50)
+                            offset: 50),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Align(
+                            alignment: Alignment.topRight,
+                            child: Transform.scale(
+                              scale: 0.9, // Set the desired scale value
+                              child: ElevatedButton(
+                                style: ButtonStyle(
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          Color(0xFF07397B)),
+                                  shape:
+                                      MaterialStateProperty.all<OutlinedBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  _getCurrentUserLocation().then((value) {
+                                    lat = value.latitude;
+                                    lng = value.longitude;
+                                    _liveLocation();
+                                  });
+                                },
+                                child: Icon(Icons.gps_fixed_outlined),
+                              ),
+                            ),
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -315,6 +385,15 @@ class HomeWidgetState extends State<HomeWidget> {
     final double lat = place['geometry']['location']['lat'];
     final double lng = place['geometry']['location']['lng'];
 
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(target: LatLng(lat, lng), zoom: 14),
+      ),
+    );
+  }
+
+  Future<void> _goToUserLocation(double lat, double lng) async {
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(
       CameraUpdate.newCameraPosition(
