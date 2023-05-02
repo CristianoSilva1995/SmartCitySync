@@ -28,6 +28,7 @@ class _AdminDashboardWidgetState extends State<AdminDashboardWidget> {
   }
 
   List _ticketStatus = [
+    "Approval Request",
     "In Process",
     "In Progress",
     "Urgent",

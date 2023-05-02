@@ -475,7 +475,7 @@ class _CreateReportWidgetState extends State<CreateReportWidget> {
                         "fileName": fileName,
                         "filePath": downloadUrl,
                         "date": formattedDate,
-                        "status": "In Process",
+                        "status": "Approval Request",
                         "uid": currentUserID,
                       };
                       FirebaseFirestore.instance.collection("ticket").add(data);

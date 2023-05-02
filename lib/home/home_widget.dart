@@ -15,6 +15,7 @@ import '../storage_service.dart';
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 final CollectionReference _ticketRead = _firestore.collection('ticket');
 String displayMarker = "";
+List<String> excludePossibilitiesOnMap = ['Approval Request', 'Archive'];
 
 class HomeWidget extends StatefulWidget {
   const HomeWidget({Key? key}) : super(key: key);
@@ -234,7 +235,7 @@ class HomeWidgetState extends State<HomeWidget> {
                       );
                     },
                   );
-                  if (displayMarker != 'Archive') {
+                  if (!excludePossibilitiesOnMap.contains(displayMarker)) {
                     markers.add(resMarker);
                   }
                 }
@@ -331,6 +332,10 @@ class HomeWidgetState extends State<HomeWidget> {
     } else if (status == 'Urgent') {
       icon = BitmapDescriptor.defaultMarker;
     } else if (status == 'Completed') {
+      icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
+    } else if (status == 'Approval Request') {
+      icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
+    } else if (status == 'Archive') {
       icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
     }
     return icon;
