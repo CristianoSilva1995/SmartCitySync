@@ -1,5 +1,3 @@
-import 'package:built_value/serializer.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../auth/auth_util.dart';
 
@@ -132,6 +130,7 @@ Future<int> queryCollectionCount(
     query = query.limit(limit);
   }
 
+  // ignore: body_might_complete_normally_catch_error
   return query.count().get().catchError((err) {
     print('Error querying $collection: $err');
   }).then((value) => value.count);

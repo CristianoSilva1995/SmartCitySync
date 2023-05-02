@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../flutter_flow/flutter_flow_theme.dart';
-import '../flutter_flow/flutter_flow_util.dart';
 import '../flutter_flow/flutter_flow_widgets.dart';
 import '../login/login_widget.dart';
 import 'package:flutter/material.dart';
@@ -95,7 +94,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(15, 20, 0, 30),
+                      padding: EdgeInsetsDirectional.fromSTEB(15, 20, 0, 10),
                       child: Text(
                         'Profile of ' + userFullName,
                         style: FlutterFlowTheme.of(context).bodyText1.override(
@@ -105,12 +104,13 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                               useGoogleFonts: GoogleFonts.asMap().containsKey(
                                   FlutterFlowTheme.of(context).bodyText1Family),
                             ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(15, 20, 0, 30),
+                      padding: EdgeInsetsDirectional.fromSTEB(15, 0, 0, 0),
                       child: Text(
-                        'All available tickets',
+                        'My tickets',
                         style: FlutterFlowTheme.of(context).bodyText1.override(
                               fontFamily:
                                   FlutterFlowTheme.of(context).bodyText1Family,
@@ -123,7 +123,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                     SingleChildScrollView(
                       child: SizedBox(
                         width: 300,
-                        height: 500,
+                        height: 600,
                         child: Padding(
                           padding:
                               EdgeInsetsDirectional.fromSTEB(10, 15, 15, 15),

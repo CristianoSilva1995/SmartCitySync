@@ -478,7 +478,17 @@ class _CreateReportWidgetState extends State<CreateReportWidget> {
                         "status": "Approval Request",
                         "uid": currentUserID,
                       };
-                      FirebaseFirestore.instance.collection("ticket").add(data);
+                      FirebaseFirestore.instance
+                          .collection("ticket")
+                          .add(data)
+                          .then((value) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                                'Thank you for submitting a ticket. Once approved, it will be displayed on the map'),
+                          ),
+                        );
+                      });
                     },
                     text: 'Submit',
                     options: FFButtonOptions(

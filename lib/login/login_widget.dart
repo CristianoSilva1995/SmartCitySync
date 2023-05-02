@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:tutorial/index.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_widgets.dart';
@@ -9,7 +8,6 @@ import '../main.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../auth/email_auth.dart';
 
 class LoginWidget extends StatefulWidget {
   const LoginWidget({Key? key}) : super(key: key);
@@ -943,7 +941,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                         ),
                                                       );
                                                     });
-                                                  } on FirebaseAuthException catch (error) {
+                                                  } on FirebaseAuthException {
                                                     ScaffoldMessenger.of(
                                                             context)
                                                         .showSnackBar(
@@ -1044,7 +1042,7 @@ class _LoginWidgetState extends State<LoginWidget> {
 
   void route() {
     User? user = FirebaseAuth.instance.currentUser;
-    var kk = FirebaseFirestore.instance
+    FirebaseFirestore.instance
         .collection('users')
         .doc(user!.uid)
         .get()

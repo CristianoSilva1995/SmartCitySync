@@ -7,7 +7,6 @@ import '../login/login_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../model/Ticket.dart';
-import '../storage_service.dart';
 
 class AdminDashboardWidget extends StatefulWidget {
   const AdminDashboardWidget({Key? key}) : super(key: key);
@@ -104,7 +103,7 @@ class _AdminDashboardWidgetState extends State<AdminDashboardWidget> {
                       children: [
                         Padding(
                           padding:
-                              EdgeInsetsDirectional.fromSTEB(15, 20, 0, 30),
+                              EdgeInsetsDirectional.fromSTEB(15, 20, 0, 10),
                           child: Text(
                             'Admin Dashboard',
                             style: FlutterFlowTheme.of(context)
@@ -117,6 +116,7 @@ class _AdminDashboardWidgetState extends State<AdminDashboardWidget> {
                                       .containsKey(FlutterFlowTheme.of(context)
                                           .bodyText1Family),
                                 ),
+                            textAlign: TextAlign.center,
                           ),
                         ),
                         Padding(
@@ -143,7 +143,8 @@ class _AdminDashboardWidgetState extends State<AdminDashboardWidget> {
                               padding:
                                   EdgeInsetsDirectional.fromSTEB(10, 15, 15, 0),
                               child: StreamBuilder(
-                                stream: _ticketRead.snapshots(),
+                                stream:
+                                    _ticketRead.orderBy('status').snapshots(),
                                 builder: (context,
                                     AsyncSnapshot<QuerySnapshot>
                                         streamSnapshot) {

@@ -1,7 +1,6 @@
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:tutorial/auth/auth_util.dart';
 import 'package:tutorial/index.dart';
 
 import 'flutter_flow/flutter_flow_theme.dart';
@@ -157,7 +156,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                 MaterialPageRoute(builder: (context) {
                               return LoginWidget();
                             }));
-                          } on FirebaseAuthException catch (e) {
+                          } on FirebaseAuthException {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Enter a valid email'),
