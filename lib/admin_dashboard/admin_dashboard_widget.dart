@@ -67,26 +67,15 @@ class _AdminDashboardWidgetState extends State<AdminDashboardWidget> {
                 );
               });
             },
-            text: 'Button',
+            text: '',
             icon: Icon(
-              Icons.login,
+              Icons.logout,
               size: 15,
             ),
             options: FFButtonOptions(
               width: 50,
               height: 40,
-              color: Color(0x000849A0),
-              textStyle: FlutterFlowTheme.of(context).subtitle2.override(
-                    fontFamily: FlutterFlowTheme.of(context).subtitle2Family,
-                    color: Colors.white,
-                    useGoogleFonts: GoogleFonts.asMap().containsKey(
-                        FlutterFlowTheme.of(context).subtitle2Family),
-                  ),
-              borderSide: BorderSide(
-                color: Colors.transparent,
-                width: 1,
-              ),
-              borderRadius: BorderRadius.circular(8),
+              color: Color(0xFF07397B),
             ),
           ),
         ],

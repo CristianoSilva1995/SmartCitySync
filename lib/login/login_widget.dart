@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:tutorial/index.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_widgets.dart';
+import '../forgotPassword.dart';
 import '../main.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
@@ -345,27 +346,36 @@ class _LoginWidgetState extends State<LoginWidget> {
                                             padding:
                                                 EdgeInsetsDirectional.fromSTEB(
                                                     0, 15, 0, 0),
-                                            child: Text(
-                                              'Forgot password?',
-                                              style:
-                                                  FlutterFlowTheme.of(context)
-                                                      .bodyText1
-                                                      .override(
-                                                        fontFamily:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .bodyText1Family,
-                                                        color:
-                                                            Color(0xFFFAFFFF),
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                        useGoogleFonts: GoogleFonts
-                                                                .asMap()
-                                                            .containsKey(
-                                                                FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodyText1Family),
-                                                      ),
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                Navigator.push(context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) {
+                                                  return ForgotPassword();
+                                                }));
+                                              },
+                                              child: Text(
+                                                'Forgot password?',
+                                                style:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyText1
+                                                        .override(
+                                                          fontFamily:
+                                                              FlutterFlowTheme.of(
+                                                                      context)
+                                                                  .bodyText1Family,
+                                                          color:
+                                                              Color(0xFFFAFFFF),
+                                                          fontWeight:
+                                                              FontWeight.normal,
+                                                          useGoogleFonts: GoogleFonts
+                                                                  .asMap()
+                                                              .containsKey(
+                                                                  FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .bodyText1Family),
+                                                        ),
+                                              ),
                                             ),
                                           ),
                                         ],
@@ -903,6 +913,14 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                           FirebaseAuth.instance;
                                                       Map<String, dynamic>
                                                           data = {
+                                                        'fName':
+                                                            _firstNameController
+                                                                .text
+                                                                .trim(),
+                                                        'lName':
+                                                            _lastNameController
+                                                                .text
+                                                                .trim(),
                                                         'email':
                                                             _emailSignController
                                                                 .text
@@ -935,8 +953,6 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                       ),
                                                     );
                                                   }
-                                                } else {
-                                                  print('nahhh');
                                                 }
                                               },
                                               text: 'Create Account\n',

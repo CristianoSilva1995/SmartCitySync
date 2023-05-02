@@ -17,10 +17,14 @@ class ProfileWidget extends StatefulWidget {
   _ProfileWidgetState createState() => _ProfileWidgetState();
 }
 
+final FirebaseAuth auth = FirebaseAuth.instance;
+String currentUserID = auth.currentUser!.uid;
+
 class _ProfileWidgetState extends State<ProfileWidget> {
   final _unfocusNode = FocusNode();
   final scaffoldKey = GlobalKey<ScaffoldState>();
   String downloadUrl = "";
+  String userFullName = "";
   @override
   void dispose() {
     _unfocusNode.dispose();
@@ -31,8 +35,8 @@ class _ProfileWidgetState extends State<ProfileWidget> {
   Widget build(BuildContext context) {
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
     final CollectionReference _ticketRead = _firestore.collection('ticket');
-    final FirebaseAuth auth = FirebaseAuth.instance;
-    String currentUserID = auth.currentUser!.uid;
+    getUserInfo();
+
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -61,26 +65,15 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                 );
               });
             },
-            text: 'Button',
+            text: '',
             icon: Icon(
-              Icons.login,
+              Icons.logout,
               size: 15,
             ),
             options: FFButtonOptions(
               width: 50,
               height: 40,
-              color: Color(0x000849A0),
-              textStyle: FlutterFlowTheme.of(context).subtitle2.override(
-                    fontFamily: FlutterFlowTheme.of(context).subtitle2Family,
-                    color: Colors.white,
-                    useGoogleFonts: GoogleFonts.asMap().containsKey(
-                        FlutterFlowTheme.of(context).subtitle2Family),
-                  ),
-              borderSide: BorderSide(
-                color: Colors.transparent,
-                width: 1,
-              ),
-              borderRadius: BorderRadius.circular(8),
+              color: Color(0xFF07397B),
             ),
           ),
         ],
@@ -104,7 +97,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                     Padding(
                       padding: EdgeInsetsDirectional.fromSTEB(15, 20, 0, 30),
                       child: Text(
-                        'Your Profile',
+                        'Profile of ' + userFullName,
                         style: FlutterFlowTheme.of(context).bodyText1.override(
                               fontFamily:
                                   FlutterFlowTheme.of(context).bodyText1Family,
@@ -154,7 +147,6 @@ class _ProfileWidgetState extends State<ProfileWidget> {
 
                                     if (auth.currentUser?.uid ==
                                         documentSnapshot['uid']) {
-                                      print("match");
                                       return Padding(
                                         padding:
                                             EdgeInsets.symmetric(vertical: 10),
@@ -259,6 +251,16 @@ class _ProfileWidgetState extends State<ProfileWidget> {
         ),
       ),
     );
+  }
+
+  void getUserInfo() async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(auth.currentUser!.uid)
+        .get()
+        .then((DocumentSnapshot snapshot) {
+      userFullName = snapshot['fName'] + " " + snapshot['lName'];
+    });
   }
 
   Future<String> getPhotoUrl(String fileName) async {
