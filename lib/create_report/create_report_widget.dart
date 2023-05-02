@@ -87,6 +87,9 @@ class _CreateReportWidgetState extends State<CreateReportWidget> {
     final Storage storage = Storage();
     var path;
     var fileName;
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    String currentUserID = auth.currentUser!.uid;
+
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -164,26 +167,6 @@ class _CreateReportWidgetState extends State<CreateReportWidget> {
                       style: FlutterFlowTheme.of(context).bodyText1,
                     ),
                   ),
-                  // FutureBuilder(
-                  //   future: storage.downloadURL(
-                  //       'casestudy_body_merton_main_xs_col12_hpad0.jpg'),
-                  //   builder:
-                  //       (BuildContext context, AsyncSnapshot<String> snapshot) {
-                  //     if (snapshot.connectionState == ConnectionState.done &&
-                  //         snapshot.hasData) {
-                  //       return Container(
-                  //           width: 300,
-                  //           height: 200,
-                  //           child: Image.network(snapshot.data!,
-                  //               fit: BoxFit.cover));
-                  //     }
-                  //     if (snapshot.connectionState == ConnectionState.waiting ||
-                  //         !snapshot.hasData) {
-                  //       return CircularProgressIndicator();
-                  //     }
-                  //     return Container();
-                  //   },
-                  // ),
                   Form(
                     key: formKey,
                     autovalidateMode: AutovalidateMode.disabled,
@@ -504,6 +487,7 @@ class _CreateReportWidgetState extends State<CreateReportWidget> {
                         "filePath": downloadUrl,
                         "date": formattedDate,
                         "status": "In Process",
+                        "uid": currentUserID,
                       };
                       FirebaseFirestore.instance.collection("ticket").add(data);
                     },

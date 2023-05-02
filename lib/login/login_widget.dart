@@ -277,24 +277,37 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                 )
                                                     .then((value) {
                                                   route();
+                                                }).onError((error, stackTrace) {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text(
+                                                          'Account not found'),
+                                                    ),
+                                                  );
                                                 });
 
-                                                // if (_emailController
-                                                //     .text.isEmpty) {
-                                                //   print("email is not valid");
-                                                // } else {
-                                                //   print(
-                                                //       "Email is ${_emailController.text}");
-                                                // }
+                                                if (_emailController
+                                                    .text.isEmpty) {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text(
+                                                          'Enter a valid email'),
+                                                    ),
+                                                  );
+                                                }
 
-                                                // if (_passwordController
-                                                //     .text.isEmpty) {
-                                                //   print(
-                                                //       "password is not valid");
-                                                // } else {
-                                                //   print(
-                                                //       "Password is ${_passwordController.text}");
-                                                // }
+                                                if (_passwordController
+                                                    .text.isEmpty) {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text(
+                                                          'Enter a valid password'),
+                                                    ),
+                                                  );
+                                                }
                                               },
                                               text: 'Login',
                                               options: FFButtonOptions(
@@ -874,23 +887,54 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                     _passwordConfirmSignController
                                                         .text
                                                         .trim()) {
-                                                  FirebaseAuth.instance
-                                                      .createUserWithEmailAndPassword(
-                                                          email:
-                                                              _emailSignController
-                                                                  .text
-                                                                  .trim(),
-                                                          password:
-                                                              _passwordSignController
-                                                                  .text
-                                                                  .trim())
-                                                      .then((value) {
-                                                    route();
-                                                  }).onError(
-                                                          (error, stackTrace) {
-                                                    print(
-                                                        'Error ${error.toString()}');
-                                                  });
+                                                  try {
+                                                    FirebaseAuth.instance
+                                                        .createUserWithEmailAndPassword(
+                                                            email:
+                                                                _emailSignController
+                                                                    .text
+                                                                    .trim(),
+                                                            password:
+                                                                _passwordSignController
+                                                                    .text
+                                                                    .trim())
+                                                        .then((value) {
+                                                      FirebaseAuth auth =
+                                                          FirebaseAuth.instance;
+                                                      Map<String, dynamic>
+                                                          data = {
+                                                        'email':
+                                                            _emailSignController
+                                                                .text
+                                                                .trim(),
+                                                        'role': 'client',
+                                                        'uid': auth
+                                                            .currentUser?.uid
+                                                      };
+                                                      FirebaseFirestore.instance
+                                                          .collection("users")
+                                                          .doc(auth
+                                                              .currentUser?.uid)
+                                                          .set(data);
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                        const SnackBar(
+                                                          content: Text(
+                                                              'Account created. Proceed to Login'),
+                                                        ),
+                                                      );
+                                                    });
+                                                  } on FirebaseAuthException catch (error) {
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      const SnackBar(
+                                                        content: Text(
+                                                            'Wrong credentials.'),
+                                                      ),
+                                                    );
+                                                  }
                                                 } else {
                                                   print('nahhh');
                                                 }
@@ -989,25 +1033,21 @@ class _LoginWidgetState extends State<LoginWidget> {
         .doc(user!.uid)
         .get()
         .then((DocumentSnapshot documentSnapshot) {
-      if (documentSnapshot.exists) {
-        if (documentSnapshot.get('role') == "admin") {
-          print("here");
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AdminDashboardWidget(),
-            ),
-          );
-        } else {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => NavBarPage(initialPage: 'home'),
-            ),
-          );
-        }
+      print(documentSnapshot);
+      if (documentSnapshot.get('role') == "admin") {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AdminDashboardWidget(),
+          ),
+        );
       } else {
-        print('Document does not exist on the database');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NavBarPage(initialPage: 'home'),
+          ),
+        );
       }
     });
   }

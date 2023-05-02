@@ -17,17 +17,20 @@ class Ticket {
   int lng;
   String postCode;
   String title;
+  String status;
+  String uid;
 
-  Ticket({
-    required this.address,
-    required this.description,
-    required this.fileName,
-    required this.filePath,
-    required this.lat,
-    required this.lng,
-    required this.postCode,
-    required this.title,
-  });
+  Ticket(
+      {required this.address,
+      required this.description,
+      required this.fileName,
+      required this.filePath,
+      required this.lat,
+      required this.lng,
+      required this.postCode,
+      required this.title,
+      required this.status,
+      required this.uid});
 
   factory Ticket.fromJson(Map<String, dynamic> json) => Ticket(
         address: json["address"],
@@ -38,6 +41,8 @@ class Ticket {
         lng: json["lng"],
         postCode: json["postCode"],
         title: json["title"],
+        status: json["status"],
+        uid: json["uid"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -49,5 +54,7 @@ class Ticket {
         "lng": lng,
         "postCode": postCode,
         "title": title,
+        "status": status,
+        "uid": uid,
       };
 }

@@ -31,7 +31,8 @@ class _ProfileWidgetState extends State<ProfileWidget> {
   Widget build(BuildContext context) {
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
     final CollectionReference _ticketRead = _firestore.collection('ticket');
-
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    String currentUserID = auth.currentUser!.uid;
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -126,110 +127,127 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                             ),
                       ),
                     ),
-                    SizedBox(
-                      width: 300,
-                      height: 550,
-                      child: Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(10, 15, 15, 0),
-                        child: StreamBuilder(
-                          stream: _ticketRead.snapshots(),
-                          builder: (context,
-                              AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-                            if (streamSnapshot.hasError) {
-                              return Text('Something went wrong');
-                            }
-                            if (streamSnapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return CircularProgressIndicator();
-                            }
-                            return ListView.builder(
-                              itemCount: streamSnapshot.data!.docs.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                final DocumentSnapshot documentSnapshot =
-                                    streamSnapshot.data!.docs[index];
+                    SingleChildScrollView(
+                      child: SizedBox(
+                        width: 300,
+                        height: 500,
+                        child: Padding(
+                          padding:
+                              EdgeInsetsDirectional.fromSTEB(10, 15, 15, 15),
+                          child: StreamBuilder(
+                            stream: _ticketRead.snapshots(),
+                            builder: (context,
+                                AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+                              if (streamSnapshot.hasError) {
+                                return Text('Something went wrong');
+                              }
+                              if (streamSnapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return CircularProgressIndicator();
+                              }
+                              return ListView.builder(
+                                  itemCount: streamSnapshot.data!.docs.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    final DocumentSnapshot documentSnapshot =
+                                        streamSnapshot.data!.docs[index];
 
-                                return Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 10),
-                                  child: Row(
-                                    children: [
-                                      Image.network(
-                                        documentSnapshot['filePath'],
-                                        width: 150,
-                                        height: 150,
-                                        fit: BoxFit.cover,
-                                      ),
-                                      SizedBox(width: 10),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                    if (auth.currentUser?.uid ==
+                                        documentSnapshot['uid']) {
+                                      print("match");
+                                      return Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 10),
+                                        child: Row(
                                           children: [
-                                            SizedBox(
-                                              width: 160,
-                                              child: Text(
-                                                documentSnapshot['title'],
-                                                softWrap: true,
-                                                maxLines: 3,
-                                              ),
+                                            Image.network(
+                                              documentSnapshot['filePath'],
+                                              width: 150,
+                                              height: 150,
+                                              fit: BoxFit.cover,
                                             ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 8.0),
-                                              child: SizedBox(
-                                                width: 160,
-                                                child: Text(
-                                                  documentSnapshot[
-                                                      'description'],
-                                                  softWrap: true,
-                                                  maxLines: 3,
-                                                ),
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 8.0),
-                                              child: SizedBox(
-                                                width: 160,
-                                                child: Text(
-                                                  documentSnapshot['address'],
-                                                  softWrap: true,
-                                                  maxLines: 3,
-                                                ),
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 8.0),
-                                              child: SizedBox(
-                                                width: 160,
-                                                child: Text(
-                                                  documentSnapshot['date'],
-                                                  softWrap: true,
-                                                  maxLines: 3,
-                                                ),
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 8.0),
-                                              child: SizedBox(
-                                                width: 160,
-                                                child: Text(
-                                                  documentSnapshot['status'],
-                                                  softWrap: true,
-                                                  maxLines: 3,
-                                                ),
+                                            SizedBox(width: 10),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  SizedBox(
+                                                    width: 160,
+                                                    child: Text(
+                                                      documentSnapshot['title'],
+                                                      softWrap: true,
+                                                      maxLines: 3,
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 8.0),
+                                                    child: SizedBox(
+                                                      width: 160,
+                                                      child: Text(
+                                                        documentSnapshot[
+                                                            'description'],
+                                                        softWrap: true,
+                                                        maxLines: 3,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 8.0),
+                                                    child: SizedBox(
+                                                      width: 160,
+                                                      child: Text(
+                                                        documentSnapshot[
+                                                            'address'],
+                                                        softWrap: true,
+                                                        maxLines: 3,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 8.0),
+                                                    child: SizedBox(
+                                                      width: 160,
+                                                      child: Text(
+                                                        documentSnapshot[
+                                                            'date'],
+                                                        softWrap: true,
+                                                        maxLines: 3,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 8.0),
+                                                    child: SizedBox(
+                                                      width: 160,
+                                                      child: Text(
+                                                        documentSnapshot[
+                                                            'status'],
+                                                        softWrap: true,
+                                                        maxLines: 3,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                           ],
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            );
-                          },
+                                      );
+                                    } else {
+                                      return Container();
+                                    }
+                                  });
+                            },
+                          ),
                         ),
                       ),
                     ),
