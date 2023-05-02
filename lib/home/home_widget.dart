@@ -14,6 +14,7 @@ import '../storage_service.dart';
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 final CollectionReference _ticketRead = _firestore.collection('ticket');
+String displayMarker = "";
 
 class HomeWidget extends StatefulWidget {
   const HomeWidget({Key? key}) : super(key: key);
@@ -102,7 +103,7 @@ class HomeWidgetState extends State<HomeWidget> {
                       BitmapDescriptor.hueAzure);
 
                   newIcon = updateMarkerIcon(documentSnapshot['status']);
-
+                  displayMarker = documentSnapshot['status'];
                   Marker resMarker = new Marker(
                     markerId: MarkerId('marker' + i.toString()),
                     icon: newIcon,
@@ -111,7 +112,6 @@ class HomeWidgetState extends State<HomeWidget> {
                     onTap: () async {
                       downloadUrl = await Storage()
                           .downloadURL(documentSnapshot['fileName']);
-
                       customInfoWindowController.addInfoWindow!(
                         SingleChildScrollView(
                           child: Container(
@@ -234,7 +234,9 @@ class HomeWidgetState extends State<HomeWidget> {
                       );
                     },
                   );
-                  markers.add(resMarker);
+                  if (displayMarker != 'Archive') {
+                    markers.add(resMarker);
+                  }
                 }
               }
               return Column(
@@ -325,9 +327,11 @@ class HomeWidgetState extends State<HomeWidget> {
     if (status == 'In Process') {
       icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange);
     } else if (status == 'In Progress') {
-      icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
+      icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure);
     } else if (status == 'Urgent') {
       icon = BitmapDescriptor.defaultMarker;
+    } else if (status == 'Completed') {
+      icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
     }
     return icon;
   }

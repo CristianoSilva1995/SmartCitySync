@@ -20,18 +20,24 @@ class _AdminDashboardWidgetState extends State<AdminDashboardWidget> {
   final _unfocusNode = FocusNode();
   final scaffoldKey = GlobalKey<ScaffoldState>();
   String downloadUrl = "";
+  String selectedStatus = "";
   @override
   void dispose() {
     _unfocusNode.dispose();
     super.dispose();
   }
 
+  List _ticketStatus = [
+    "In Process",
+    "In Progress",
+    "Urgent",
+    "Completed",
+    "Archive"
+  ];
   @override
   Widget build(BuildContext context) {
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
     final CollectionReference _ticketRead = _firestore.collection('ticket');
-
-    List<Ticket> ticketData;
 
     return Scaffold(
       key: scaffoldKey,
@@ -158,12 +164,16 @@ class _AdminDashboardWidgetState extends State<AdminDashboardWidget> {
                                       ConnectionState.waiting) {
                                     return CircularProgressIndicator();
                                   }
+
                                   return ListView.builder(
                                     itemCount: streamSnapshot.data!.docs.length,
                                     itemBuilder:
                                         (BuildContext context, int index) {
                                       final DocumentSnapshot documentSnapshot =
                                           streamSnapshot.data!.docs[index];
+
+                                      selectedStatus =
+                                          documentSnapshot['status'];
                                       return Padding(
                                         padding:
                                             EdgeInsets.symmetric(vertical: 10),
@@ -237,11 +247,37 @@ class _AdminDashboardWidgetState extends State<AdminDashboardWidget> {
                                                             top: 8.0),
                                                     child: SizedBox(
                                                       width: 160,
-                                                      child: Text(
-                                                        documentSnapshot[
-                                                            'status'],
-                                                        softWrap: true,
-                                                        maxLines: 3,
+                                                      child: DropdownButton(
+                                                        value: selectedStatus,
+                                                        items: _ticketStatus
+                                                            .map((e) =>
+                                                                DropdownMenuItem(
+                                                                  value: e,
+                                                                  child:
+                                                                      Text(e),
+                                                                  key:
+                                                                      UniqueKey(), // add a unique identifier to each item
+                                                                ))
+                                                            .toList(),
+                                                        onChanged: (val) {
+                                                          setState(() {
+                                                            selectedStatus =
+                                                                val as String;
+                                                            final docTicket =
+                                                                FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        'ticket')
+                                                                    .doc(documentSnapshot[
+                                                                        'uid']);
+                                                            docTicket.update({
+                                                              'status':
+                                                                  selectedStatus
+                                                            });
+                                                            print(
+                                                                selectedStatus);
+                                                          });
+                                                        },
                                                       ),
                                                     ),
                                                   ),
